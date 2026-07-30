@@ -44,14 +44,7 @@ try:
         return True
 except Exception:
     pass
-
-# ---------------------------------------------------------------------------
-# Yapılandırma
-# ---------------------------------------------------------------------------
-# HF Spaces > Settings > Variables and secrets:
-#   - HF_TOKEN   (secret)  : Hugging Face erişim token'ı  (zorunlu)
-#   - MODEL_ID   (variable): Kullanılacak model            (opsiyonel)
-#   - HF_PROVIDER(variable): Inference sağlayıcısı          (opsiyonel)
+  
 MODEL_ID = os.environ.get("MODEL_ID", "openai/gpt-oss-120b")
 HF_TOKEN = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACEHUB_API_TOKEN")
 HF_PROVIDER = os.environ.get("HF_PROVIDER", "auto")
@@ -64,10 +57,6 @@ client = InferenceClient(**_client_kwargs)
 
 TIMEAPI_BASE = "https://timeapi.io/api"
 
-
-# ---------------------------------------------------------------------------
-# Yardımcı: bir zaman dilimi için güncel saat + UTC farkını getir
-# ---------------------------------------------------------------------------
 def _fetch_zone(timezone: str) -> dict:
     """
     Önce yerel IANA veritabanından (anlık ve doğru) hesaplar; bu mümkün değilse
@@ -111,10 +100,6 @@ def _fetch_zone(timezone: str) -> dict:
 
     return {"error": f"'{timezone}' geçerli bir IANA zaman dilimi değil (örn. 'Europe/Istanbul')."}
 
-
-# ---------------------------------------------------------------------------
-# 1) Araçların gerçek Python uygulamaları
-# ---------------------------------------------------------------------------
 def get_current_time(timezone: str) -> dict:
     """Belirtilen IANA zaman diliminde güncel saati ve UTC farkını döndürür."""
     return _fetch_zone(timezone)
@@ -150,10 +135,6 @@ TOOL_FUNCS = {
     "time_difference": time_difference,
 }
 
-
-# ---------------------------------------------------------------------------
-# 2) Tool Call tasarımı — Model'e verilen JSON Şeması
-# ---------------------------------------------------------------------------
 TOOLS = [
     {
         "type": "function",
@@ -213,9 +194,6 @@ SYSTEM_PROMPT = (
 )
 
 
-# ---------------------------------------------------------------------------
-# 3) Agent döngüsü — araç çağrılarını yürütür ve adımları kaydeder
-# ---------------------------------------------------------------------------
 def _fmt_args(args: dict) -> str:
     return ", ".join(f"{k}={v!r}" for k, v in args.items())
 
@@ -301,9 +279,6 @@ def run_agent(user_message: str, history_messages: list):
     return "Adım sınırına ulaşıldı, yanıt tamamlanamadı.", "\n".join(trace_lines)
 
 
-# ---------------------------------------------------------------------------
-# 4) Gradio arayüzü
-# ---------------------------------------------------------------------------
 def respond(message, chat_history):
     history_messages = [
         {"role": t["role"], "content": t["content"]} for t in chat_history
