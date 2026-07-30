@@ -63,7 +63,6 @@ def _fetch_zone(timezone: str) -> dict:
     timeapi.io public API'sine düşer.
     Döner: {"timezone", "local_time", "utc_offset_hours"}
     """
-    # 1) Birincil yol: yerel IANA veritabanı (anlık, doğru saat)
     if ZoneInfo is not None:
         try:
             now = datetime.now(ZoneInfo(timezone))
@@ -76,7 +75,7 @@ def _fetch_zone(timezone: str) -> dict:
         except Exception:
             pass  # geçersiz timezone olabilir -> API'yi dene
 
-    # 2) Yedek yol: public API
+   
     try:
         r = requests.get(
             f"{TIMEAPI_BASE}/timezone/zone",
